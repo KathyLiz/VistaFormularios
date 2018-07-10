@@ -13,3 +13,13 @@
   .example-container > * {
     width: 80%;
   }
+
+  button{
+    background-color: #052E5E;
+    color: white;
+  }
+
+  .mat-button.formPage:not([disabled]){
+    background-color: white;
+    color: #052E5E;
+  }

@@ -1,7 +1,7 @@
 <div class="example-container">
     <h1 class="mat-display-1">Formulario FAA 201.</h1>
     <h2 class="mat-h2">Formulario para supresión de matrícula</h2>
-
+<form class="example-container" (ngSubmit)="validarFormulario(formulario)" #formulario="ngForm">
     <mat-form-field>
         <mat-select (selectionChange)="doSomething($event)" placeholder="Facultad" [formControl]="facultadControl" required>
           <mat-option *ngFor="let facultad of facultades" [value]="facultad">
@@ -18,37 +18,40 @@
             {{carrera.nombre}}
           </mat-option>
         </mat-select>
-        <mat-error *ngIf="animalControl.hasError('required')">Seleccione una Carrera</mat-error>
+        <mat-error *ngIf="carrerasControl.hasError('required')">Seleccione una Carrera</mat-error>
     </mat-form-field>
 
     <mat-form-field>
-        <mat-select placeholder="Periodo" [formControl]="animalControl" required>
+        <mat-select placeholder="Periodo" [formControl]="periodoControl" required>
           <mat-option>--</mat-option>
-          <mat-option *ngFor="let animal of animals" [value]="animal">
-            {{animal.name}}
+          <mat-option *ngFor="let periodo of periodos" [value]="periodo">
+            {{periodo.nombre}}
           </mat-option>
         </mat-select>
-        <mat-error *ngIf="animalControl.hasError('required')">Seleccione un Periodo</mat-error>
-        <mat-hint>{{animalControl.value?.sound}}</mat-hint>
+        <mat-error *ngIf="periodoControl.hasError('required')">Seleccione un Periodo</mat-error>
     </mat-form-field>
 
     <mat-form-field>
-        <input matInput placeholder="Ingrese sus nombres" [formControl]="email" required>
-        <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
+        <input matInput placeholder="Ingrese sus nombres" [formControl]="nombres" required>
+        <mat-error *ngIf="nombres.invalid">{{getErrorMessage()}}</mat-error>
       </mat-form-field>
 
       <mat-form-field>
-          <input matInput placeholder="Ingrese sus Apellidos" [formControl]="email" required>
-          <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
+          <input matInput placeholder="Ingrese sus Apellidos" [formControl]="apellidos" required>
+          <mat-error *ngIf="apellidos.invalid">{{getErrorMessage1()}}</mat-error>
         </mat-form-field>
 
 
       <mat-form-field>
-          <input matInput placeholder="Ingrese su número de identificación" [formControl]="email" required>
-          <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
+          <input type="tel" matInput placeholder="Ingrese su número de identificación" maxlength="10" [formControl]="identificacion" required>
+          <mat-error *ngIf="identificacion.invalid">{{getErrorMessage2()}}</mat-error>
       </mat-form-field>
       <mat-form-field class="example-full-width">
         <textarea matInput required placeholder="Ingrese la justificación"></textarea>
       </mat-form-field>
+
+      <button mat-button [disabled]="!formulario.valid" type="submit">Validar Campos</button>
+    </form>
+      
 
 </div>

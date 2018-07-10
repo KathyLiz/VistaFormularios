@@ -2,6 +2,7 @@ import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, SimpleChanges } from '@angul
 
 // Formulario
 import { FormsModule} from '@angular/forms';
+import { NgForm } from '@angular/forms';
 
 // ANgular MAterial
 import {FormControl, Validators} from '@angular/forms';
@@ -13,6 +14,9 @@ import {FormBuilder, FormGroup} from '@angular/forms';
   styleUrls: ['./formulario-faa201.component.scss']
 })
 export class FormularioFaa201Component implements OnInit {
+  nombres = new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z íóúáéñÑü]*')]);
+  apellidos = new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z íóúáéñÑü]*')]);
+  identificacion = new FormControl('', [Validators.required, Validators.pattern('[0-9]')]);
   email = new FormControl('', [Validators.required, Validators.email]);
   options: FormGroup;
   animalControl = new FormControl('', [Validators.required]);
@@ -50,6 +54,12 @@ export class FormularioFaa201Component implements OnInit {
     {nombre: 'Ingeniería en Eléctrica'},
     {nombre: 'Ingeniería en Telecomunicaciones'},
   ];
+
+  periodoControl = new FormControl('', [Validators.required]);
+  periodos: Carrera[] = [
+    {nombre: '2018 A'},
+    {nombre: '2018 B'},
+  ];
   constructor(fb: FormBuilder) {
     this.options = fb.group({
       hideRequired: false,
@@ -70,9 +80,28 @@ export class FormularioFaa201Component implements OnInit {
   ngOnInit() {
   }
   getErrorMessage() {
-    return this.email.hasError('required') ? 'You must enter a value' :
-        this.email.hasError('email') ? 'Not a valid email' :
+    return this.nombres.hasError('required') ? 'Campo requerido' :
+        this.nombres.hasError('text') ? 'Valor no permitido' :
+        this.nombres.hasError('pattern') ? 'Ingrese un valor válido' :
             '';
+  }
+
+  getErrorMessage1() {
+    return this.apellidos.hasError('required') ? 'Campo requerido' :
+        this.apellidos.hasError('text') ? 'Valor no permitido' :
+        this.apellidos.hasError('pattern') ? 'Ingrese un valor válido' :
+            '';
+  }
+
+  getErrorMessage2() {
+    return this.identificacion.hasError('required') ? 'Campo requerido' :
+        this.identificacion.hasError('tel') ? 'Valor no permitido' :
+        this.identificacion.hasError('pattern') ? 'Ingrese un valor válido' :
+        this.identificacion.hasError('maxlength') ? 'Ingrese un valor válido' :
+            '';
+  }
+  validarFormulario(formulario: NgForm) {
+    console.log('Formulario', formulario);
   }
 
 }
