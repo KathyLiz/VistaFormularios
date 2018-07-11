@@ -8,9 +8,12 @@ import { FormularioFaa201Component } from './componentes/formulario-faa201/formu
 
 // Angular Material
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { MatFormFieldModule, MAT_LABEL_GLOBAL_OPTIONS, MatButtonModule, MatRippleModule } from '@angular/material';
+import { MatFormFieldModule, MAT_LABEL_GLOBAL_OPTIONS, MatButtonModule, MatRippleModule, MatDialogModule } from '@angular/material';
 import { MatInputModule } from '@angular/material';
 import {MatSelectModule} from '@angular/material/select';
+import { DialogComponentComponent } from './componentes/dialog-component/dialog-component.component';
+import { HttpClientModule } from '@angular/common/http';
+import { GeneradorFomularioService } from './servicio/generador-fomulario.service';
 
 const modules = [
   MatButtonModule,
@@ -22,7 +25,8 @@ const modules = [
 @NgModule({
   declarations: [
     AppComponent,
-    FormularioFaa201Component
+    FormularioFaa201Component,
+    DialogComponentComponent
   ],
   imports: [
     modules,
@@ -32,12 +36,16 @@ const modules = [
     ReactiveFormsModule,
     MatInputModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDialogModule,
+    HttpClientModule
   ],
   exports: [modules],
   providers: [
-    {provide: MAT_LABEL_GLOBAL_OPTIONS, useValue: {float: 'always'}}
+    {provide: MAT_LABEL_GLOBAL_OPTIONS, useValue: {float: 'always'}},
+    GeneradorFomularioService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [DialogComponentComponent]
 })
 export class AppModule { }

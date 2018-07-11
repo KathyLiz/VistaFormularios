@@ -7,6 +7,9 @@ import { NgForm } from '@angular/forms';
 // ANgular MAterial
 import {FormControl, Validators} from '@angular/forms';
 import {FormBuilder, FormGroup} from '@angular/forms';
+import {MatDialog, MatDialogConfig} from '@angular/material';
+import { DialogComponentComponent } from '../dialog-component/dialog-component.component';
+import { GeneradorFomularioService } from '../../servicio/generador-fomulario.service';
 
 @Component({
   selector: 'app-formulario-faa201',
@@ -14,14 +17,26 @@ import {FormBuilder, FormGroup} from '@angular/forms';
   styleUrls: ['./formulario-faa201.component.scss']
 })
 export class FormularioFaa201Component implements OnInit {
+  error: boolean;
+  onload: boolean;
   nombres = new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z íóúáéñÑü]*')]);
   apellidos = new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z íóúáéñÑü]*')]);
-  identificacion = new FormControl('', [Validators.required, Validators.pattern('[0-9]')]);
+  justificacion = new FormControl('');
+  identificacion = new FormControl('', [Validators.required, Validators.pattern('[0-9]{10}')]);
   email = new FormControl('', [Validators.required, Validators.email]);
   options: FormGroup;
+  cedula: string;
+  mostrarJustificacion = false;
   animalControl = new FormControl('', [Validators.required]);
   facultad;
   facultad1;
+  faa201Form: FormGroup;
+  datosFormulario: DatosFormulario;
+
+  TIPO_DOCUMENTO = 'formulario';
+  NOMBRE_DOCUEMNTO = 'FAA_201';
+  url = 'http://localhost:8001';
+
   animals: Animal[] = [
     {name: 'Dog', sound: 'Woof!'},
     {name: 'Cat', sound: 'Meow!'},
@@ -42,13 +57,13 @@ export class FormularioFaa201Component implements OnInit {
   ];
 
   carrerasControl = new FormControl('', [Validators.required]);
-  carrerasGenerico: Carrera [];
-  carrerasSistemas: Carrera[] = [
+  carrerasGenerico: TemplateGenerico [];
+  carrerasSistemas: TemplateGenerico[] = [
     {nombre: 'Ingeniería en Sistemas Informáticos y de Computación'},
     {nombre: 'Ingeniría de Software'},
     {nombre: 'Ingeniería en Ciencias de la Computación'},
   ];
-  carrerasEE: Carrera[] = [
+  carrerasEE: TemplateGenerico[] = [
     {nombre: 'Ingeniería en Electrónica y Automatización'},
     {nombre: 'Ingeniría en Tecnologías de la Informacióne'},
     {nombre: 'Ingeniería en Eléctrica'},
@@ -56,14 +71,39 @@ export class FormularioFaa201Component implements OnInit {
   ];
 
   periodoControl = new FormControl('', [Validators.required]);
-  periodos: Carrera[] = [
+  periodos: TemplateGenerico[] = [
     {nombre: '2018 A'},
     {nombre: '2018 B'},
   ];
-  constructor(fb: FormBuilder) {
+
+  heroForm: FormGroup;
+
+  constructor(private fb: FormBuilder, private dialog: MatDialog, private _formularioService: GeneradorFomularioService) {
     this.options = fb.group({
       hideRequired: false,
       floatLabel: 'auto',
+    });
+
+    this.faa201Form = new FormGroup({
+      'nombres': this.nombres,
+      'apellidos': this.apellidos,
+      'identificacion': this.identificacion,
+      'facultad': this.facultadControl,
+      'carrera': this.carrerasControl,
+      'periodo': this.periodoControl,
+      'justificacion': this.justificacion
+    });
+
+    this.createForm();
+  }
+
+  mostrarCampoJustificacion(valor) {
+    this.mostrarJustificacion = valor;
+  }
+
+  createForm() {
+    this.heroForm = this.fb.group({
+      name: ['', Validators.required ],
     });
   }
 
@@ -100,9 +140,85 @@ export class FormularioFaa201Component implements OnInit {
         this.identificacion.hasError('maxlength') ? 'Ingrese un valor válido' :
             '';
   }
-  validarFormulario(formulario: NgForm) {
-    console.log('Formulario', formulario);
+
+
+  enviarFormulario() {
+    if (this.validar() && this.faa201Form.status === 'VALID') {
+      this.datosFormulario = {
+        tipo: this.TIPO_DOCUMENTO,
+        nombre: this.NOMBRE_DOCUEMNTO,
+        fecha: 'date',
+        facultad: this.faa201Form.value.facultad.nombre,
+        carrera: this.faa201Form.value.carrera.nombre,
+        nombres: this.faa201Form.value.nombres,
+        apellidos: this.faa201Form.value.apellidos,
+        documento: this.faa201Form.value.identificacion,
+        periodo: this.faa201Form.value.periodo.nombre,
+        justificacion: this.faa201Form.value.justificacion
+      };
+      console.log('Formulario', this.datosFormulario);
+     // this.realizarPeticion(JSON.stringify(this.datosFormulario));
+    } else {
+      this.openDialog();
+      this.identificacion.setValue('');
+    }
   }
+
+  realizarPeticion(json) {
+    const observableLogin$ = this._formularioService.sendData_HttpClient(json, this.url, this.NOMBRE_DOCUEMNTO);
+            observableLogin$.subscribe(
+                (data: any) => {
+                    // this.loaded = true;
+                    const loginResponse = data;
+                    console.log('respuestaOk', loginResponse);
+                },
+                (error) => {
+                    this.error = true;
+                    this.onload = false;
+                },
+                () => {
+                    // se termina el stream
+                    this.onload = false;
+                }
+            );
+  }
+
+  openDialog() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    this.dialog.open(DialogComponentComponent, dialogConfig);
+}
+
+
+
+  /**Algoritmo de validación de cédula */
+  validar() {
+    const cad = this.identificacion.value;
+    let total = 0;
+    const longitud = cad.length;
+    const longcheck = longitud - 1;
+    if (cad !== '' && longitud === 10) {
+      for (let i = 0; i < longcheck; i++) {
+        if (i % 2 === 0) {
+          let aux = Number(cad.charAt(i)) * 2;
+          if (aux > 9) { aux -= 9; }
+          total += aux;
+        } else {
+          total += Number(cad.charAt(i)); // parseInt o concatenará en lugar de sumar
+        }
+      }
+      total = total % 10 ? 10 - total % 10 : 0;
+      if (Number(cad.charAt(longitud - 1)) === total) {
+        console.log('valida');
+        return true;
+      }  else {
+        console.log('NO valida');
+        return false;
+      }
+    }
+  }
+
 
 }
 export interface Animal {
@@ -113,6 +229,19 @@ export interface Facultad {
   nombre: string;
   cod: number;
 }
-export interface Carrera {
+export interface TemplateGenerico {
   nombre: string;
+}
+
+export interface DatosFormulario {
+  tipo: string;
+  nombre: string;
+  fecha: string;
+  facultad: string;
+  carrera: string;
+  nombres: string;
+  apellidos: string;
+  documento: string;
+  periodo: string;
+  justificacion: string;
 }

@@ -1,7 +1,5 @@
-<div class="example-container">
-    <h1 class="mat-display-1">Formulario FAA 201.</h1>
-    <h2 class="mat-h2">Formulario para supresión de matrícula</h2>
-<form class="example-container" (ngSubmit)="validarFormulario(formulario)" #formulario="ngForm">
+
+<form class="example-container" (ngSubmit)="validarFormulario(formulario)"[formGroup]="faa201Form">
     <mat-form-field>
         <mat-select (selectionChange)="doSomething($event)" placeholder="Facultad" [formControl]="facultadControl" required>
           <mat-option *ngFor="let facultad of facultades" [value]="facultad">
@@ -43,15 +41,20 @@
 
 
       <mat-form-field>
-          <input type="tel" matInput placeholder="Ingrese su número de identificación" maxlength="10" [formControl]="identificacion" required>
+          <input type="tel" matInput placeholder="Ingrese su número de identificación" maxlength="10" [formControl]="identificacion"  required>
           <mat-error *ngIf="identificacion.invalid">{{getErrorMessage2()}}</mat-error>
       </mat-form-field>
-      <mat-form-field class="example-full-width">
-        <textarea matInput required placeholder="Ingrese la justificación"></textarea>
+
+      <button [hidden]="mostrarJustificacion"  class="btn btn-link btnJustificacion"  (click)= "mostrarCampoJustificacion(true)">Ingresar Justificación</button>
+
+      <mat-form-field *ngIf="mostrarJustificacion" class="example-full-width">
+        <textarea matInput  [formControl]="justificacion" placeholder="Ingrese la justificación"></textarea>
       </mat-form-field>
-
-      <button mat-button [disabled]="!formulario.valid" type="submit">Validar Campos</button>
     </form>
-      
-
-</div>
+    <div class="button-row">
+      <button class="formButtons" mat-raised-button [disabled]="!faa201Form.valid" (click)=" enviarFormulario()">Enviar Formulario</button>
+      <button class="formButtons" mat-raised-button [disabled]="!faa201Form.valid" type="submit">Cancelar</button>
+    </div>
+    <!-- 
+    <p>Form value: {{ faa201Form.value | json }}</p>
+    <p>Form status: {{ faa201Form.status | json }}</p> -->

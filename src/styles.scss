@@ -1,3 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
 @import '~bootstrap/dist/css/bootstrap.min.css';
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+.example-container {
+    flex-direction: column;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    padding-top: 1%;
+  }
+  .example-container > * {
+    width: 80%;
+  }
+
+  h4 h5 {
+      text-align: center;
+  }
+  article{
+     padding-bottom: 5%;
+  }
+
+  .formButtons{
+    background-color: #052E5E;
+    color: white;
+  }
+  .formButtons:disabled{
+    background-color: rgb(58, 73, 90);
+    color: white;
+  }
