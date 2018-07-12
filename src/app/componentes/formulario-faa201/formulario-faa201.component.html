@@ -45,11 +45,22 @@
           <mat-error *ngIf="identificacion.invalid">{{getErrorMessage2()}}</mat-error>
       </mat-form-field>
 
-      <button [hidden]="mostrarJustificacion"  class="btn btn-link btnJustificacion"  (click)= "mostrarCampoJustificacion(true)">Ingresar Justificación</button>
+      <mat-form-field>
+        <mat-select placeholder="Tipo de Adjunto" [formControl]="adjuntosControl" required>
+          <mat-option *ngFor="let adjunto of adjuntosOpciones" [value]="adjunto">
+            {{adjunto.nombre}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="animalControl.hasError('required')">Elija una facultad</mat-error>
+    </mat-form-field>
+
+      <button [hidden]="mostrarJustificacion" data-toggle="tooltip" title="Este campo es opcional" class="btn btn-link btnJustificacion"  (click)= "mostrarCampoJustificacion(true)">Ingresar Justificación</button>
 
       <mat-form-field *ngIf="mostrarJustificacion" class="example-full-width">
         <textarea matInput  [formControl]="justificacion" placeholder="Ingrese la justificación"></textarea>
       </mat-form-field>
+
+
     </form>
     <div class="button-row">
       <button class="formButtons" mat-raised-button [disabled]="!faa201Form.valid" (click)=" enviarFormulario()">Enviar Formulario</button>

@@ -15,14 +15,13 @@ export class GeneradorFomularioService {
 
     const httpOptions = {
         headers: new HttpHeaders({
-          'Unique-Identifier':  this.uuid,
-          'TipoDocumento': documento,
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
+          'Content-Type': 'application/x-www-form-urlencoded'
         })
       };
 
-    this.JSON = { args: datos };
-    return this._httpClient.post (uri, JSON.stringify(this.JSON), httpOptions);
+    this.JSON = { args: datos,
+                  tipo: 'formulario' };
+            const argumentos = 'PARAM=' + encodeURIComponent(JSON.stringify(this.JSON));
+    return this._httpClient.post (uri, argumentos, httpOptions);
   }
 }

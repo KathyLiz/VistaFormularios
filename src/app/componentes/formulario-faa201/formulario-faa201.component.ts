@@ -23,7 +23,6 @@ export class FormularioFaa201Component implements OnInit {
   apellidos = new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z íóúáéñÑü]*')]);
   justificacion = new FormControl('');
   identificacion = new FormControl('', [Validators.required, Validators.pattern('[0-9]{10}')]);
-  email = new FormControl('', [Validators.required, Validators.email]);
   options: FormGroup;
   cedula: string;
   mostrarJustificacion = false;
@@ -35,7 +34,7 @@ export class FormularioFaa201Component implements OnInit {
 
   TIPO_DOCUMENTO = 'formulario';
   NOMBRE_DOCUEMNTO = 'FAA_201';
-  url = 'http://localhost:8001';
+  url = 'https://bot.interlancompu.com/';
 
   animals: Animal[] = [
     {name: 'Dog', sound: 'Woof!'},
@@ -56,6 +55,12 @@ export class FormularioFaa201Component implements OnInit {
     {nombre: 'Escuela de Formación de Tecnólogos', cod: 9}
   ];
 
+  adjuntosControl = new FormControl('', [Validators.required]);
+  adjuntosOpciones: TemplateGenerico[] = [
+    {nombre: 'Certificado Médico'},
+    {nombre: 'Certificado de Calamidad Doméstica'}
+  ];
+
   carrerasControl = new FormControl('', [Validators.required]);
   carrerasGenerico: TemplateGenerico [];
   carrerasSistemas: TemplateGenerico[] = [
@@ -69,6 +74,39 @@ export class FormularioFaa201Component implements OnInit {
     {nombre: 'Ingeniería en Eléctrica'},
     {nombre: 'Ingeniería en Telecomunicaciones'},
   ];
+
+  carrerasTecnologos: TemplateGenerico[] = [
+    {nombre: 'Tecnología en Electrónica y Telecomunicaciones'},
+    {nombre: 'Tecnología en Análisis de Sistemas Informáticos'},
+    {nombre: 'Tecnología en Electromecánica'},
+   {nombre: 'Tecnología en Agua y Saneamiento Ambiental'}
+ ];
+
+ carrerasQuimicaYAgroindustrias: TemplateGenerico[] = [
+   {nombre: 'Agroindustria'},
+   {nombre: 'Ingeniería Química'}
+];
+
+carrerasMecanicas: TemplateGenerico[] = [
+  {nombre: 'Ingeniería Mecánica'}
+];
+carrerasGeologia_Petroleos: TemplateGenerico[] = [
+  {nombre: 'Geología'},
+  {nombre: 'Petróleos'}
+];
+carrerasCivil_Ambiental: TemplateGenerico[] = [
+  {nombre: 'Ingeniería Civil'},
+  {nombre: 'Ingeniería Ambiental'}
+];
+carrerasCienciasAdministrativas: TemplateGenerico[] = [
+  {nombre: 'Ingeniería de la Producción'}
+];
+carrerasCiencias: TemplateGenerico[] = [
+  {nombre: 'Física'},
+  {nombre: 'Matemática'},
+  {nombre: 'Ingeniería Matemática'}
+];
+
 
   periodoControl = new FormControl('', [Validators.required]);
   periodos: TemplateGenerico[] = [
@@ -91,7 +129,8 @@ export class FormularioFaa201Component implements OnInit {
       'facultad': this.facultadControl,
       'carrera': this.carrerasControl,
       'periodo': this.periodoControl,
-      'justificacion': this.justificacion
+      'justificacion': this.justificacion,
+      'adjuntos': this.adjuntosControl
     });
 
     this.createForm();
@@ -110,10 +149,34 @@ export class FormularioFaa201Component implements OnInit {
   doSomething(e) {
     const codigo = e.value.cod;
     console.log('Evento', e.value.cod);
-    if (codigo === 1 ) {
-      this.carrerasGenerico = this.carrerasSistemas;
-    } else if (codigo === 5 ) {
-      this.carrerasGenerico = this.carrerasEE;
+    switch (codigo) {
+      case 1:
+        this.carrerasGenerico = this.carrerasSistemas;
+      break;
+      case 2:
+      this.carrerasGenerico = this.carrerasCiencias;
+      break;
+      case 3:
+      this.carrerasGenerico = this.carrerasCienciasAdministrativas;
+      break;
+      case 4:
+      this.carrerasGenerico = this.carrerasCivil_Ambiental;
+      break;
+      case 5:
+        this.carrerasGenerico = this.carrerasEE;
+      break;
+      case 6:
+      this.carrerasGenerico = this.carrerasGeologia_Petroleos;
+      break;
+      case 7:
+      this.carrerasGenerico = this.carrerasQuimicaYAgroindustrias;
+      break;
+      case 8:
+      this.carrerasGenerico = this.carrerasMecanicas;
+      break;
+      case 9:
+      this.carrerasGenerico = this.carrerasTecnologos;
+      break;
     }
   }
 
@@ -143,6 +206,7 @@ export class FormularioFaa201Component implements OnInit {
 
 
   enviarFormulario() {
+    console.log('Formulario afsfsfja', this.faa201Form.value);
     if (this.validar() && this.faa201Form.status === 'VALID') {
       this.datosFormulario = {
         tipo: this.TIPO_DOCUMENTO,
@@ -154,10 +218,11 @@ export class FormularioFaa201Component implements OnInit {
         apellidos: this.faa201Form.value.apellidos,
         documento: this.faa201Form.value.identificacion,
         periodo: this.faa201Form.value.periodo.nombre,
-        justificacion: this.faa201Form.value.justificacion
+        justificacion: this.faa201Form.value.justificacion,
+        adjuntos: this.faa201Form.value.adjuntos.nombre
       };
       console.log('Formulario', this.datosFormulario);
-     // this.realizarPeticion(JSON.stringify(this.datosFormulario));
+      this.realizarPeticion(this.datosFormulario);
     } else {
       this.openDialog();
       this.identificacion.setValue('');
@@ -244,4 +309,5 @@ export interface DatosFormulario {
   documento: string;
   periodo: string;
   justificacion: string;
+  adjuntos: string;
 }
