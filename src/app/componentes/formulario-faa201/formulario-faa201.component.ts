@@ -235,15 +235,17 @@ carrerasCiencias: TemplateGenerico[] = [
                 (data: any) => {
                     // this.loaded = true;
                     const loginResponse = data;
-                    console.log('respuestaOk', loginResponse);
+                    console.log('respuestaOk', data);
                 },
                 (error) => {
                     this.error = true;
                     this.onload = false;
+                    console.log('respuestaNOK', error);
                 },
                 () => {
                     // se termina el stream
                     this.onload = false;
+                    console.log('FINALIZÖ');
                 }
             );
   }
