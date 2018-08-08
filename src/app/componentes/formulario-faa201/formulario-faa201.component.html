@@ -1,5 +1,6 @@
 
-<form class="example-container" (ngSubmit)="validarFormulario(formulario)"[formGroup]="faa201Form">
+<div id="formularioUI" [hidden] ="onload || error || exito">
+  <form class="example-container" (ngSubmit)="validarFormulario(formulario)"[formGroup]="faa201Form">
     <mat-form-field>
         <mat-select (selectionChange)="doSomething($event)" placeholder="Facultad" [formControl]="facultadControl" required>
           <mat-option *ngFor="let facultad of facultades" [value]="facultad">
@@ -20,13 +21,15 @@
     </mat-form-field>
 
     <mat-form-field>
-        <mat-select placeholder="Periodo" [formControl]="periodoControl" required>
+        <input matInput placeholder="Ingrese el periodo" [formControl]="periodo" required>
+        <mat-error *ngIf="periodo.invalid">{{getErrorMessagePeriodo()}}</mat-error>
+<!--         <mat-select placeholder="Periodo" [formControl]="periodoControl" required>
           <mat-option>--</mat-option>
           <mat-option *ngFor="let periodo of periodos" [value]="periodo">
             {{periodo.nombre}}
           </mat-option>
         </mat-select>
-        <mat-error *ngIf="periodoControl.hasError('required')">Seleccione un Periodo</mat-error>
+        <mat-error *ngIf="periodoControl.hasError('required')">Seleccione un Periodo</mat-error> -->
     </mat-form-field>
 
     <mat-form-field>
@@ -63,9 +66,26 @@
 
     </form>
     <div class="button-row">
-      <button class="formButtons" mat-raised-button [disabled]="!faa201Form.valid" (click)=" enviarFormulario()">Enviar Formulario</button>
-      <button class="formButtons" mat-raised-button [disabled]="!faa201Form.valid" type="submit">Cancelar</button>
+      <button class="formButtons" mat-raised-button [disabled]="!faa201Form.valid" (click)=" enviarFormulario()">Generar Formulario</button>
+      <!-- <button class="formButtons" mat-raised-button [disabled]="!faa201Form.valid" type="submit">Cancelar</button> -->
     </div>
+</div>
+<div id="loadSpinner" [hidden] ="!onload">
+  <mat-progress-spinner class="center" mode="indeterminate"> </mat-progress-spinner>
+ <p align="center">Generando archivo...</p>
+</div>
+
+<div class="centerError" *ngIf ="!onload && error">
+  <img src="assets/error.png" width="150px" height="150px" alt="Imagen de error en la petición">
+  <p>Ha ocurrio un error</p>
+ <button class="formButtons" mat-raised-button (click)="mostrarFormulario()">Volver al Formulario</button>
+</div>
+
+<div class="centerError" *ngIf ="exito && !onload && !error">
+    <img src="assets/exito.png" width="150px" height="150px" alt="Imagen de error en la petición">
+    <p>Archivo generado exitosamente</p>
+   <button class="formButtons" mat-raised-button (click)="mostrarFormulario()">Descargar Formullario</button>
+  </div>
     <!-- 
     <p>Form value: {{ faa201Form.value | json }}</p>
     <p>Form status: {{ faa201Form.status | json }}</p> -->

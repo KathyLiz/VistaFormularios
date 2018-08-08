@@ -23,6 +23,7 @@ export class FormularioFaa201Component implements OnInit {
   apellidos = new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z íóúáéñÑü]*')]);
   justificacion = new FormControl('');
   identificacion = new FormControl('', [Validators.required, Validators.pattern('[0-9]{10}')]);
+  periodo = new FormControl('', [Validators.required, Validators.pattern('[0,2]{2}[0-9]{2} [a-zA-Z íóúáéñÑü]{1}')]);
   options: FormGroup;
   cedula: string;
   mostrarJustificacion = false;
@@ -31,10 +32,11 @@ export class FormularioFaa201Component implements OnInit {
   facultad1;
   faa201Form: FormGroup;
   datosFormulario: DatosFormulario;
-
+  anioPeriodo;
   TIPO_DOCUMENTO = 'formulario';
   NOMBRE_DOCUEMNTO = 'FAA_201';
-  url = 'https://bot.interlancompu.com/';
+  MENSAJE_ERROR_CAMPOS = 'Existen valores incorrectos en el formulario';
+  url = 'https://smartbot.epn.edu.ec/';
 
   animals: Animal[] = [
     {name: 'Dog', sound: 'Woof!'},
@@ -108,13 +110,9 @@ carrerasCiencias: TemplateGenerico[] = [
 ];
 
 
-  periodoControl = new FormControl('', [Validators.required]);
-  periodos: TemplateGenerico[] = [
-    {nombre: '2018 A'},
-    {nombre: '2018 B'},
-  ];
 
   heroForm: FormGroup;
+  exito: boolean;
 
   constructor(private fb: FormBuilder, private dialog: MatDialog, private _formularioService: GeneradorFomularioService) {
     this.options = fb.group({
@@ -122,28 +120,28 @@ carrerasCiencias: TemplateGenerico[] = [
       floatLabel: 'auto',
     });
 
+    this.createForm();
+  }
+
+  // Se obtiene el año actual para poner en el formulario
+  mostrarCampoJustificacion(valor) {
+    this.mostrarJustificacion = valor;
+  }
+
+  createForm() {
     this.faa201Form = new FormGroup({
       'nombres': this.nombres,
       'apellidos': this.apellidos,
       'identificacion': this.identificacion,
       'facultad': this.facultadControl,
       'carrera': this.carrerasControl,
-      'periodo': this.periodoControl,
+      'periodo': this.periodo,
       'justificacion': this.justificacion,
       'adjuntos': this.adjuntosControl
     });
-
-    this.createForm();
-  }
-
-  mostrarCampoJustificacion(valor) {
-    this.mostrarJustificacion = valor;
-  }
-
-  createForm() {
-    this.heroForm = this.fb.group({
-      name: ['', Validators.required ],
-    });
+   const fecha = new Date();
+   this.anioPeriodo = fecha.getUTCFullYear();
+    this.periodo.setValue(this.anioPeriodo);
   }
 
   doSomething(e) {
@@ -189,6 +187,12 @@ carrerasCiencias: TemplateGenerico[] = [
             '';
   }
 
+  getErrorMessagePeriodo() {
+    return this.periodo.hasError('required') ? 'Campo requerido' :
+        this.periodo.hasError('text') ? 'Valor no permitido' :
+        this.periodo.hasError('pattern') ? 'Ingrese un valor válido' :
+            '';
+  }
   getErrorMessage1() {
     return this.apellidos.hasError('required') ? 'Campo requerido' :
         this.apellidos.hasError('text') ? 'Valor no permitido' :
@@ -206,8 +210,10 @@ carrerasCiencias: TemplateGenerico[] = [
 
 
   enviarFormulario() {
+    console.log( this.validarPeriodo());
     console.log('Formulario afsfsfja', this.faa201Form.value);
-    if (this.validar() && this.faa201Form.status === 'VALID') {
+    if (this.validar() && this.faa201Form.status === 'VALID' && this.validarPeriodo()) {
+      this.onload = true;
       this.datosFormulario = {
         tipo: this.TIPO_DOCUMENTO,
         nombre: this.NOMBRE_DOCUEMNTO,
@@ -217,15 +223,15 @@ carrerasCiencias: TemplateGenerico[] = [
         nombres: this.faa201Form.value.nombres,
         apellidos: this.faa201Form.value.apellidos,
         documento: this.faa201Form.value.identificacion,
-        periodo: this.faa201Form.value.periodo.nombre,
+        periodo: this.faa201Form.value.periodo,
         justificacion: this.faa201Form.value.justificacion,
         adjuntos: this.faa201Form.value.adjuntos.nombre
       };
       console.log('Formulario', this.datosFormulario);
+      console.log('Formulario String', JSON.stringify(this.datosFormulario));
       this.realizarPeticion(this.datosFormulario);
     } else {
       this.openDialog();
-      this.identificacion.setValue('');
     }
   }
 
@@ -234,6 +240,8 @@ carrerasCiencias: TemplateGenerico[] = [
             observableLogin$.subscribe(
                 (data: any) => {
                     // this.loaded = true;
+                    this.onload = false;
+                    this.exito = true;
                     const loginResponse = data;
                     console.log('respuestaOk', data);
                 },
@@ -245,7 +253,7 @@ carrerasCiencias: TemplateGenerico[] = [
                 () => {
                     // se termina el stream
                     this.onload = false;
-                    console.log('FINALIZÖ');
+                    console.log('FINALIZO');
                 }
             );
   }
@@ -254,10 +262,30 @@ carrerasCiencias: TemplateGenerico[] = [
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      mensaje: this.MENSAJE_ERROR_CAMPOS
+    };
     this.dialog.open(DialogComponentComponent, dialogConfig);
 }
 
+/** Función para mostrar el formulario cuando hay un error */
+mostrarFormulario() {
+    this.onload = false;
+    this.error = false;
+}
 
+validarPeriodo() {
+  const periodoForm = this.periodo.value;
+  const anio = periodoForm.split(' ');
+  console.log(typeof anio[0]);
+  console.log(this.anioPeriodo);
+  if (Number(anio[0]) === this.anioPeriodo || (Number(anio[0]) === this.anioPeriodo - 1) ) { // si el año es igual al actual o al actual +1
+    return true;
+  } else {
+    this.periodo.setValue('');
+    return false;
+  }
+}
 
   /**Algoritmo de validación de cédula */
   validar() {
@@ -281,6 +309,7 @@ carrerasCiencias: TemplateGenerico[] = [
         return true;
       }  else {
         console.log('NO valida');
+      this.identificacion.setValue('');
         return false;
       }
     }

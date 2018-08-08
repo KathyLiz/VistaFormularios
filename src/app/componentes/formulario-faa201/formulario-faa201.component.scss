@@ -27,3 +27,22 @@
   .button-row a {
     margin-right: 8px;
   }
+
+  //Alinea al centro el loading
+  .center {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+#loadSpinner{
+  padding-top: 20%;
+
+}
+
+.centerError{
+  margin: auto;
+    width: 30%;
+    padding: 10px;
+    padding-top: 10%;
+}
