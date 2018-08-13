@@ -36,8 +36,9 @@ export class FormularioFaa201Component implements OnInit {
   TIPO_DOCUMENTO = 'formulario';
   NOMBRE_DOCUEMNTO = 'FAA_201';
   MENSAJE_ERROR_CAMPOS = 'Existen valores incorrectos en el formulario';
-  url = 'https://smartbot.epn.edu.ec/';
-
+  url_descarga_formulario: string;
+  //url = 'https://smartbot.epn.edu.ec/';
+  url = 'https://bot.interlancompu.com'
   animals: Animal[] = [
     {name: 'Dog', sound: 'Woof!'},
     {name: 'Cat', sound: 'Meow!'},
@@ -243,6 +244,7 @@ carrerasCiencias: TemplateGenerico[] = [
                     this.onload = false;
                     this.exito = true;
                     const loginResponse = data;
+                    this.url_descarga_formulario = data.url;
                     console.log('respuestaOk', data);
                 },
                 (error) => {
@@ -272,6 +274,11 @@ carrerasCiencias: TemplateGenerico[] = [
 mostrarFormulario() {
     this.onload = false;
     this.error = false;
+}
+
+descargarFormulario() {
+  console.log('La URL', this.descargarFormulario);
+  window.open(this.url_descarga_formulario);
 }
 
 validarPeriodo() {
