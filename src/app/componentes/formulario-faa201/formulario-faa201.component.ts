@@ -37,8 +37,8 @@ export class FormularioFaa201Component implements OnInit {
   NOMBRE_DOCUEMNTO = 'FAA_201';
   MENSAJE_ERROR_CAMPOS = 'Existen valores incorrectos en el formulario';
   url_descarga_formulario: string;
-  //url = 'https://smartbot.epn.edu.ec/';
-  url = 'https://bot.interlancompu.com'
+  url = 'https://smartbot.epn.edu.ec/';
+ // url = 'https://bot.interlancompu.com'
   animals: Animal[] = [
     {name: 'Dog', sound: 'Woof!'},
     {name: 'Cat', sound: 'Meow!'},
