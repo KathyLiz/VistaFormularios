@@ -20,7 +20,8 @@ export class GeneradorFomularioService {
       };
 
     this.JSON = { args: datos,
-                  tipo: 'formulario' };
+                  tipo: 'formulario',
+                  session: this.uuid };
             const argumentos = 'PARAM=' + encodeURIComponent(JSON.stringify(this.JSON));
     return this._httpClient.post (uri, argumentos, httpOptions);
   }
