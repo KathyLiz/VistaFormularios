@@ -1,6 +1,6 @@
 
 <div id="formularioUI" [hidden] ="onload || error || exito">
-  <form class="example-container" (ngSubmit)="validarFormulario(formulario)"[formGroup]="faa201Form">
+  <form class="example-container" [formGroup]="faa201Form">
     <mat-form-field>
         <mat-select (selectionChange)="doSomething($event)" placeholder="Facultad" [formControl]="facultadControl" required>
           <mat-option *ngFor="let facultad of facultades" [value]="facultad">
@@ -57,7 +57,7 @@
         <mat-error *ngIf="animalControl.hasError('required')">Elija una facultad</mat-error>
     </mat-form-field>
 
-      <button [hidden]="mostrarJustificacion" data-toggle="tooltip" title="Este campo es opcional" class="btn btn-link btnJustificacion"  (click)= "mostrarCampoJustificacion(true)">Ingresar Justificación</button>
+      <button type="button" [hidden]="mostrarJustificacion" data-toggle="tooltip" title="Este campo es opcional" class="btn btn-link btnJustificacion"  (click)= "mostrarCampoJustificacion(true)">Ingresar Justificación</button>
 
       <mat-form-field *ngIf="mostrarJustificacion" class="example-full-width">
         <textarea matInput  [formControl]="justificacion" placeholder="Ingrese la justificación"></textarea>
@@ -77,13 +77,13 @@
 
 <div class="centerError" *ngIf ="!onload && error">
   <img src="assets/error.png" width="150px" height="150px" alt="Imagen de error en la petición">
-  <p>Ha ocurrio un error</p>
+  <p align="center">Ups! Ha ocurrio un error generando el archivo</p>
  <button class="formButtons" mat-raised-button (click)="mostrarFormulario()">Volver al Formulario</button>
 </div>
 
 <div class="centerError" *ngIf ="exito && !onload && !error">
     <img src="assets/exito.png" width="150px" height="150px" alt="Imagen de error en la petición">
-    <p>Archivo generado exitosamente</p>
+    <p align="center">Archivo generado exitosamente</p>
    <button class="formButtons" mat-raised-button (click)="descargarFormulario()">Descargar Formulario</button>
   </div>
     <!-- 

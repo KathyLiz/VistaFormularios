@@ -10,6 +10,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import { DialogComponentComponent } from '../dialog-component/dialog-component.component';
 import { GeneradorFomularioService } from '../../servicio/generador-fomulario.service';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
   selector: 'app-formulario-faa201',
@@ -122,6 +123,9 @@ carrerasCiencias: TemplateGenerico[] = [
     });
 
     this.createForm();
+/*     this.onload=false;
+    this.error=true;
+    this.exito=false; */
   }
 
   // Se obtiene el año actual para poner en el formulario
