@@ -42,10 +42,23 @@
           <mat-error *ngIf="apellidos.invalid">{{getErrorMessage1()}}</mat-error>
         </mat-form-field>
 
+        <mat-form-field>
+          <mat-select (selectionChange)="selectorDoc($event)" placeholder="Tipo documento" [formControl]="tpoDocumentoControl" required>
+            <mat-option *ngFor="let documento of documentosOpciones" [value]="documento">
+              {{documento.nombre}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="tpoDocumentoControl.hasError('required')">Seleccione el tipo de documento</mat-error>
+      </mat-form-field>
 
-      <mat-form-field>
-          <input type="tel" matInput placeholder="Ingrese su número de identificación" maxlength="10" [formControl]="identificacion"  required>
+      <mat-form-field *ngIf="docCed">
+          <input type="tel" matInput placeholder="Ingrese su número de identificación" maxlength="10" [formControl]="identificacion" [required]="docCed">
           <mat-error *ngIf="identificacion.invalid">{{getErrorMessage2()}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field [hidden]="!docPass">
+        <input type="text" matInput placeholder="Ingrese su pasaporte" maxlength="15" [formControl]="pasaporte"  [required]="docPass">
+        <mat-error *ngIf="pasaporte.invalid">{{getErrorMessagePass()}}</mat-error>
       </mat-form-field>
 
       <mat-form-field>
@@ -54,7 +67,7 @@
             {{adjunto.nombre}}
           </mat-option>
         </mat-select>
-        <mat-error *ngIf="animalControl.hasError('required')">Elija una facultad</mat-error>
+        <mat-error *ngIf="animalControl.hasError('required')">Elija un adjunto</mat-error>
     </mat-form-field>
 
       <button type="button" [hidden]="mostrarJustificacion" data-toggle="tooltip" title="Este campo es opcional" class="btn btn-link btnJustificacion"  (click)= "mostrarCampoJustificacion(true)">Ingresar Justificación</button>
