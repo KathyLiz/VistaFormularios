@@ -42,6 +42,7 @@ export class FormularioFaa201Component implements OnInit {
   MENSAJE_INFO = 'Se generará un archivo WORD que podrá descargar y modificar.';
   url_descarga_formulario: string;
   url = 'https://smartbot.epn.edu.ec/';
+  url_config = 'https://smartbot.epn.edu.ec/traerFacultades';
  // url = 'https://bot.interlancompu.com'
   tpoDocumentoControl = new FormControl('', [Validators.required]);
   documentosOpciones: TemplateGenerico[] = [
@@ -49,17 +50,7 @@ export class FormularioFaa201Component implements OnInit {
     {nombre: 'Pasaporte'}
   ];
   facultadControl = new FormControl('', [Validators.required]);
-  facultades: Facultad[] = [
-    {nombre: 'Facultad de Sistemas', cod: 1},
-    {nombre: 'Facultad de Ciencias', cod: 2},
-    {nombre: 'Facultad de Ciencias Administrativas', cod: 3},
-    {nombre: 'Facultad de Ing. Civil y Ambiental', cod: 4},
-    {nombre: 'Facultad de Ing. Eléctrica y Electrónica', cod: 5},
-    {nombre: 'Facultad de Geología y Petróleos', cod: 6},
-    {nombre: 'Facultad de Química y Agroindustria', cod: 7},
-    {nombre: 'Facultad de Mecánica', cod: 8},
-    {nombre: 'Escuela de Formación de Tecnólogos', cod: 9}
-  ];
+  facultades: Facultad[] ;
 
   adjuntosControl = new FormControl('', [Validators.required]);
   adjuntosOpciones: TemplateGenerico[] = [
@@ -70,53 +61,17 @@ export class FormularioFaa201Component implements OnInit {
 
   carrerasControl = new FormControl('', [Validators.required]);
   carrerasGenerico: TemplateGenerico [];
-  carrerasSistemas: TemplateGenerico[] = [
-    {nombre: 'Ingeniería en Sistemas Informáticos y de Computación'},
-    {nombre: 'Ingeniría de Software'},
-    {nombre: 'Ingeniería en Ciencias de la Computación'},
-  ];
-  carrerasEE: TemplateGenerico[] = [
-    {nombre: 'Ingeniería en Electrónica y Automatización'},
-    {nombre: 'Ingeniría en Tecnologías de la Información'},
-    {nombre: 'Ingeniería en Eléctrica'},
-    {nombre: 'Ingeniería en Telecomunicaciones'},
-  ];
-
-  carrerasTecnologos: TemplateGenerico[] = [
-    {nombre: 'Tecnología en Electrónica y Telecomunicaciones'},
-    {nombre: 'Tecnología en Análisis de Sistemas Informáticos'},
-    {nombre: 'Tecnología en Electromecánica'},
-   {nombre: 'Tecnología en Agua y Saneamiento Ambiental'}
- ];
-
- carrerasQuimicaYAgroindustrias: TemplateGenerico[] = [
-   {nombre: 'Agroindustria'},
-   {nombre: 'Ingeniería Química'}
-];
-
-carrerasMecanicas: TemplateGenerico[] = [
-  {nombre: 'Ingeniería Mecánica'}
-];
-carrerasGeologia_Petroleos: TemplateGenerico[] = [
-  {nombre: 'Geología'},
-  {nombre: 'Petróleos'}
-];
-carrerasCivil_Ambiental: TemplateGenerico[] = [
-  {nombre: 'Ingeniería Civil'},
-  {nombre: 'Ingeniería Ambiental'}
-];
-carrerasCienciasAdministrativas: TemplateGenerico[] = [
-  {nombre: 'Ingeniería de la Producción'}
-];
-carrerasCiencias: TemplateGenerico[] = [
-  {nombre: 'Física'},
-  {nombre: 'Matemática'},
-  {nombre: 'Ingeniería Matemática'}
-];
+  carrerasSistemas: TemplateGenerico[];
+  carrerasEE: TemplateGenerico[];
+  carrerasTecnologos: TemplateGenerico[];
+  carrerasQuimicaYAgroindustrias: TemplateGenerico[];
+  carrerasMecanicas: TemplateGenerico[];
+  carrerasGeologia_Petroleos: TemplateGenerico[];
+  carrerasCivil_Ambiental: TemplateGenerico[];
+  carrerasCienciasAdministrativas: TemplateGenerico[];
+  carrerasCiencias: TemplateGenerico[];
 
 
-
-  heroForm: FormGroup;
   exito: boolean;
   docCed = false;
 
@@ -125,11 +80,8 @@ carrerasCiencias: TemplateGenerico[] = [
       hideRequired: false,
       floatLabel: 'auto',
     });
-
+    this.obtenerDatos({}, this.url_config);
     this.createForm();
-/*     this.onload=false;
-    this.error=true;
-    this.exito=false; */
   }
 
   // Se obtiene el año actual para poner en el formulario
@@ -265,26 +217,107 @@ carrerasCiencias: TemplateGenerico[] = [
         justificacion: this.faa201Form.value.justificacion,
         adjuntos: this.faa201Form.value.adjuntos.nombre
       };
-      this.realizarPeticion(this.datosFormulario);
+      this.realizarPeticion(this.datosFormulario, this.url);
     } else {
       this.openDialog(this.MENSAJE_ERROR_CAMPOS);
     }
   }
 
-  realizarPeticion(json) {
-    const observableLogin$ = this._formularioService.sendData_HttpClient(json, this.url, this.NOMBRE_DOCUEMNTO);
+  realizarPeticion(json, url) {
+    const observableLogin$ = this._formularioService.sendData_HttpClient(json, url);
             observableLogin$.subscribe(
                 (data: any) => {
                     // this.loaded = true;
                     this.onload = false;
-                    this.exito = true;
-                    const loginResponse = data;
-                    this.url_descarga_formulario = data.url;
+                      this.exito = true;
+                      this.url_descarga_formulario = data.url;
                 },
                 (error) => {
                     this.error = true;
                     this.onload = false;
+                },
+                () => {
+                    // se termina el stream
+                    this.onload = false;
+                }
+            );
+  }
+
+  obtenerDatos(json, url) {
+    const observableLogin$ = this._formularioService.sendData_HttpClient(json, url);
+            observableLogin$.subscribe(
+                (data: any) => {
+                    // this.loaded = true;
+                    this.onload = false;
+                    console.log(data);
+                    this.facultades = data.facultades;
+                    this.carrerasSistemas = data.carreras[0].carreras;
+                    this.carrerasCiencias = data.carreras[1].carreras;
+                    this.carrerasCienciasAdministrativas = data.carreras[2].carreras;
+                    this.carrerasCivil_Ambiental = data.carreras[3].carreras;
+                    this.carrerasEE = data.carreras[4].carreras;
+                    this.carrerasGeologia_Petroleos = data.carreras[5].carreras;
+                    this.carrerasQuimicaYAgroindustrias = data.carreras[6].carreras;
+                    this.carrerasMecanicas = data.carreras[7].carreras;
+                    this.carrerasTecnologos = data.carreras[8].carreras;
+                },
+                (error) => {
+                   // this.error = true;
+                    this.onload = false;
                     console.log('respuestaNOK', error);
+                    this.facultades= [
+                      {nombre: 'Facultad de Sistemas', cod: 1},
+                      {nombre: 'Facultad de Ciencias', cod: 2},
+                      {nombre: 'Facultad de Ciencias Administrativas', cod: 3},
+                      {nombre: 'Facultad de Ing. Civil y Ambiental', cod: 4},
+                      {nombre: 'Facultad de Ing. Eléctrica y Electrónica', cod: 5},
+                      {nombre: 'Facultad de Geología y Petróleos', cod: 6},
+                      {nombre: 'Facultad de Química y Agroindustria', cod: 7},
+                      {nombre: 'Facultad de Mecánica', cod: 8},
+                      {nombre: 'Escuela de Formación de Tecnólogos', cod: 9}];
+                      this.carrerasSistemas= [
+                        {nombre: 'Ingeniería en Sistemas Informáticos y de Computación'},
+                        {nombre: 'Ingeniría de Software'},
+                        {nombre: 'Ingeniería en Ciencias de la Computación'},
+                      ];
+                      this.carrerasEE= [
+                        {nombre: 'Ingeniería en Electrónica y Automatización'},
+                        {nombre: 'Ingeniría en Tecnologías de la Información'},
+                        {nombre: 'Ingeniería en Eléctrica'},
+                        {nombre: 'Ingeniería en Telecomunicaciones'},
+                      ];
+
+                      this.carrerasTecnologos= [
+                        {nombre: 'Tecnología en Electrónica y Telecomunicaciones'},
+                        {nombre: 'Tecnología en Análisis de Sistemas Informáticos'},
+                        {nombre: 'Tecnología en Electromecánica'},
+                      {nombre: 'Tecnología en Agua y Saneamiento Ambiental'}
+                    ];
+
+                    this.carrerasQuimicaYAgroindustrias= [
+                      {nombre: 'Agroindustria'},
+                      {nombre: 'Ingeniería Química'}
+                    ];
+
+                    this.carrerasMecanicas= [
+                      {nombre: 'Ingeniería Mecánica'}
+                    ];
+                    this.carrerasGeologia_Petroleos= [
+                      {nombre: 'Geología'},
+                      {nombre: 'Petróleos'}
+                    ];
+                    this.carrerasCivil_Ambiental=[
+                      {nombre: 'Ingeniería Civil'},
+                      {nombre: 'Ingeniería Ambiental'}
+                    ];
+                    this.carrerasCienciasAdministrativas= [
+                      {nombre: 'Ingeniería de la Producción'}
+                    ];
+                    this.carrerasCiencias= [
+                      {nombre: 'Física'},
+                      {nombre: 'Matemática'},
+                      {nombre: 'Ingeniería Matemática'}
+                    ];
                 },
                 () => {
                     // se termina el stream
